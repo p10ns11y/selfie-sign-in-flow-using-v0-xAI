@@ -3,8 +3,8 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import CreateAccountPage from "./create-account/page"
-import SignInPage from "./signin/page-grok-fix"
+import CreateAccountPage from "./create-account/page-grok-refactored"
+import SignInPage from "./signin/page-grok-refactored"
 
 export default function HomePage() {
   const [currentPage, setCurrentPage] = useState<"home" | "create" | "signin">("home")
