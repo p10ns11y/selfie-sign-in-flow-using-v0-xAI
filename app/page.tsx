@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import CreateAccountPage from "./create-account/page-grok-refactored"
+import CreateAccountPage from "./create-account/page"
 import SignInPage from "./signin/page-grok-refactored"
 
 export default function HomePage() {

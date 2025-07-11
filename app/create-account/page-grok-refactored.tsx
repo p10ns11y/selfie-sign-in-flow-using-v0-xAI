@@ -2,7 +2,7 @@
 
 import { useMachine } from "@xstate/react"
 import { useRef, useEffect } from "react"
-import { createAccountMachine } from "../state-machines/create-acccount"
+import { createAccountMachine } from "../state-machines/create-account"
 import { REQUIRED_ANGLES } from "../camera-utils"
 import { InfoView } from "../views/create-account-info"
 import { CreateCaptureView } from "../views/capture-training-pictures"

@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Camera, Check, RotateCcw } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert" // Assume imported; add if needed
+import { Loader2, Camera, Check, RotateCcw } from "lucide-react"
 import { REQUIRED_ANGLES } from "../camera-utils"
 
 export function CreateCaptureView({
@@ -16,6 +17,8 @@ export function CreateCaptureView({
   progress,
   capturedPhotos,
   currentIndex,
+  isValidating = false,
+  validationError = null,
 }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -46,16 +49,31 @@ export function CreateCaptureView({
             </p>
           </div>
 
+          {validationError && (
+            <Alert variant="destructive">
+              <AlertDescription>{validationError}</AlertDescription>
+            </Alert>
+          )}
+
           <div className="flex gap-2">
             {capturedPhotos.length > 0 && (
-              <Button variant="outline" onClick={onRetake} className="flex-1 bg-transparent">
+              <Button variant="outline" onClick={onRetake} className="flex-1 bg-transparent" disabled={isValidating}>
                 <RotateCcw className="h-4 w-4 mr-2" />
                 Retake
               </Button>
             )}
-            <Button onClick={onCapture} className="flex-1">
-              <Camera className="h-4 w-4 mr-2" />
-              Capture Photo
+            <Button onClick={onCapture} className="flex-1" disabled={isValidating}>
+              {isValidating ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Validating Face...
+                </>
+              ) : (
+                <>
+                  <Camera className="h-4 w-4 mr-2" />
+                  Capture Photo
+                </>
+              )}
             </Button>
           </div>
 
