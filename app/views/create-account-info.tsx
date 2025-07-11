@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ArrowLeft } from "lucide-react"
+import { REQUIRED_ANGLES } from "../camera-utils" // Import to dynamic length
 
 export function InfoView({ onNameChange, onEmailChange, onStart, name, email, onBack }) {
   return (
@@ -31,9 +32,9 @@ export function InfoView({ onNameChange, onEmailChange, onStart, name, email, on
             <Input id="email" type="email" value={email} onChange={onEmailChange} placeholder="Enter your email" />
           </div>
           <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="font-semibold text-sm mb-2">Next: Facial Recognition Setup</h3>
+            <h3 className="font-semibold text-sm mb-2">Next: Secure Facial Training</h3>
             <p className="text-sm text-muted-foreground">
-              We'll capture 5 photos from different angles to train your facial recognition model.
+              We'll capture {REQUIRED_ANGLES.length} photos from different angles to train your facial model using secure AWS Rekognition.
             </p>
           </div>
           <Button onClick={onStart} className="w-full" disabled={!name || !email}>
