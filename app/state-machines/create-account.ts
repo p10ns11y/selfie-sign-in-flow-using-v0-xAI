@@ -1,4 +1,4 @@
-import { createMachine, assign } from 'xstate'
+import { createMachine, assign, fromPromise } from 'xstate'
 import { RekognitionClient, DetectFacesCommand } from '@aws-sdk/client-rekognition'
 import { getCameraStream, submitAccount, REQUIRED_ANGLES } from '../camera-utils'
 
@@ -102,8 +102,8 @@ export const createAccountMachine = createMachine(
   },
   {
     actors: {
-      getCameraStream: getCameraStream,
-      submitAccount,
+      getCameraStream: fromPromise(getCameraStream),
+      submitAccount: fromPromise(submitAccount),
       validatePhoto: async ({ context, event }) => {
         const photo = event.photo
         const buffer = Buffer.from(photo.split(',')[1], 'base64')
