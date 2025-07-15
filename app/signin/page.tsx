@@ -1,6 +1,8 @@
 'use client'
 
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { ArrowLeft, Camera, Loader2, Shield, User } from 'lucide-react'
+import { useCallback, useRef, useState } from 'react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -9,8 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Camera, ArrowLeft, Loader2, Shield, User } from 'lucide-react'
 
 interface SignInPageProps {
   onBack: () => void
@@ -39,8 +39,8 @@ export default function SignInPage({ onBack }: SignInPageProps) {
         },
       })
       setStream(mediaStream)
+
       if (videoRef.current) {
-        console.log(mediaStream)
         videoRef.current.srcObject = mediaStream
       }
     } catch (error) {
@@ -115,7 +115,7 @@ export default function SignInPage({ onBack }: SignInPageProps) {
                 <ArrowLeft className="h-4 w-4" />
               </Button>
               <div>
-                <CardTitle>Sign Inn</CardTitle>
+                <CardTitle>Sign In</CardTitle>
                 <CardDescription>
                   Use your face to sign in securely
                 </CardDescription>
@@ -205,7 +205,7 @@ export default function SignInPage({ onBack }: SignInPageProps) {
 
             <div className="text-center p-4 bg-blue-50 rounded-lg">
               <p className="font-medium">
-                Position your face in the circle Prem
+                Position your face in the circle
               </p>
               <p className="text-sm text-muted-foreground mt-1">
                 Make sure your face is well-lit and clearly visible

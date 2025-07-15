@@ -3,20 +3,14 @@
 import { createBrowserInspector } from '@statelyai/inspect'
 import { useMachine } from '@xstate/react'
 import { useEffect, useRef } from 'react'
-import { createActor } from 'xstate'
 import { REQUIRED_ANGLES } from '../camera-utils'
 import { createAccountMachine } from '../state-machines/create-account'
 import { CreateCaptureView } from '../views/capture-training-pictures'
 import { InfoView } from '../views/create-account-info'
 import { CompleteView } from '../views/training-complete'
 
-const inspector = createBrowserInspector()
-
-const actor = createActor(createAccountMachine, {
-  inspect: inspector.inspect,
-})
-
-actor.start()
+// TODO: Need to turn off in production mode
+const { inspect } = createBrowserInspector()
 
 interface CreateAccountPageProps {
   onBack: () => void
@@ -38,6 +32,7 @@ export default function CreateAccountPage({ onBack }: CreateAccountPageProps) {
     createAccountMachine.provide({
       actions: customActions,
     }),
+    { inspect }
   )
 
   // Set stream to video
