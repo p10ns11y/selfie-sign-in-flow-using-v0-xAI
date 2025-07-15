@@ -1,5 +1,5 @@
-import { createMachine, assign } from 'xstate'
-import { getCameraStream, authenticate } from '../camera-utils'
+import { assign, createMachine } from 'xstate'
+import { getCameraStream } from '../camera-utils'
 
 export const signInMachine = createMachine(
   {

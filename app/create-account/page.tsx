@@ -3,18 +3,12 @@
 import { createBrowserInspector } from '@statelyai/inspect'
 import { useMachine } from '@xstate/react'
 import { useEffect, useRef } from 'react'
-// import { inspect } from "@xstate/inspect";
 import { createActor } from 'xstate'
 import { REQUIRED_ANGLES } from '../camera-utils'
-import { createAccountMachine } from '../state-machines/create-account' // Fixed typo in path/name for consistency
+import { createAccountMachine } from '../state-machines/create-account'
 import { CreateCaptureView } from '../views/capture-training-pictures'
 import { InfoView } from '../views/create-account-info'
 import { CompleteView } from '../views/training-complete'
-
-// inspect({
-//   iframe: false, // Opens in new tab for better QoL (less clutter)
-//   url: "https://stately.ai/viz?inspect", // Default visualizer
-// });
 
 const inspector = createBrowserInspector()
 
@@ -56,11 +50,10 @@ export default function CreateAccountPage({ onBack }: CreateAccountPageProps) {
     }
   }, [state.context.stream])
 
-  // Handle errors (enhanced for Rekognition)
   useEffect(() => {
     if (state.context.error) {
       alert(
-        `Error: ${state.context.error.message || state.context.error}. Please try again.`,
+        `Error: ${state.context.error?.message || state.context.error}. Please try again.`,
       )
     }
   }, [state.context.error])

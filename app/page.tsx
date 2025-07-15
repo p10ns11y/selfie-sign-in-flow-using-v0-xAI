@@ -1,6 +1,5 @@
 'use client'
 
-// import { inspect } from "@xstate/inspect";
 import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -12,17 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import CreateAccountPage from './create-account/page'
-import SignInPage from './signin/page-grok-refactored'
-
-// // Enable inspect mode only in dev (simplifies prod builds)
-// if (process.env.NODE_ENV === "development") {
-
-// }
-
-// inspect({
-//   iframe: false, // Opens in new tab for better QoL (less clutter)
-//   url: "https://stately.ai/viz?inspect", // Default visualizer
-// });
+import SignInPage from './signin/page'
 
 export default function HomePage() {
   const [currentPage, setCurrentPage] = useState<'home' | 'create' | 'signin'>(

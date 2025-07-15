@@ -1,24 +1,5 @@
-import {
-  DetectFacesCommand,
-  RekognitionClient,
-} from '@aws-sdk/client-rekognition'
 import { assign, createMachine, fromPromise } from 'xstate'
 import { getCameraStream, REQUIRED_ANGLES } from '../camera-utils'
-
-// const { inspect } = createBrowserInspector();
-
-// inspect({
-//   iframe: false, // Opens in new tab for better QoL (less clutter)
-//   // url: "https://stately.ai/viz?inspect", // Default visualizer
-// });
-
-const rekognitionClient = new RekognitionClient({ region: 'eu-west-1' })
-
-// Helper function to check credentials
-async function checkCredentials() {
-  const c = await rekognitionClient.config.credentials()
-  console.log(c?.accessKeyId)
-}
 
 export const createAccountMachine = createMachine(
   {
@@ -140,7 +121,6 @@ export const createAccountMachine = createMachine(
       }),
       addPhoto: assign({
         photos: ({ context, event }) => {
-          // debugger;
           return [...context.photos, event?.output?.input?.photo]
         },
         currentIndex: ({ context }) => context.currentIndex + 1,
@@ -165,25 +145,7 @@ export const createAccountMachine = createMachine(
   },
 )
 
-// async function validatePhotoClient({ input }: { input: { photo: string } }) {
-// 	// checkCredentials();
-
-// 	const photo = input.photo;
-// 	const buffer = Buffer.from(photo.split(",")[1], "base64");
-// 	const params = {
-// 		Image: { Bytes: new Uint8Array(buffer) },
-// 		Attributes: ["ALL"],
-// 	};
-// 	const command = new DetectFacesCommand(params);
-// 	const response = await rekognitionClient.send(command); // v3 send pattern
-// 	if (response.FaceDetails?.length !== 1) {
-// 		throw new Error("Invalid photo: Must detect exactly one face.");
-// 	}
-// 	// Optional: Check quality, e.g., if (response.FaceDetails[0].Quality.Brightness < 50) throw...
-// 	return response;
-// }
-
-// In create-account.ts validatePhoto actor (now async fetch)
+// Actors utils
 async function validatePhoto({ input }: { input: { photo: string } }) {
   const photo = input.photo
 
@@ -193,17 +155,19 @@ async function validatePhoto({ input }: { input: { photo: string } }) {
     body: JSON.stringify({ action: 'validate', photo }),
   })
   const data = await response.json()
-  if (!response.ok) throw new Error(data.error || 'Validation failed')
+  
+  if (!response.ok) {
+    throw new Error(data.error || 'Validation failed')
+  }
+  
   return {
     input,
     data,
-  }
+  };
 }
 
 async function submitAccount({ input }: { input: { photo: string } }) {
-  const { photos, formData } = input.context
-  // const userId = formData.email;
-  // console.log(photos);
+  const { photos } = input.context
 
   const response = await fetch('/api/rekognition', {
     method: 'POST',
@@ -211,9 +175,13 @@ async function submitAccount({ input }: { input: { photo: string } }) {
     body: JSON.stringify({ action: 'index', photos }),
   })
   const data = await response.json()
-  if (!response.ok) throw new Error(data.error || 'Validation failed')
+
+  if (!response.ok) { 
+    throw new Error(data.error || 'Validation failed') 
+  }
+
   return {
     input,
     data,
-  }
+  };
 }

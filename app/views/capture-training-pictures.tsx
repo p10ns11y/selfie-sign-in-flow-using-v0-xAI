@@ -1,7 +1,7 @@
 'use client'
 
 import { Camera, Check, Loader2, RotateCcw } from 'lucide-react'
-import { Alert, AlertDescription } from '@/components/ui/alert' // Assume imported; add if needed
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {

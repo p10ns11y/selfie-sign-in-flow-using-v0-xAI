@@ -10,7 +10,7 @@ const rekognitionClient = new RekognitionClient({
 })
 
 export async function POST(req: Request) {
-  const requestBody = await req.json() // Or parse formData for photos
+  const requestBody = await req.json()
   try {
     if (requestBody.action === 'validate') {
       const { action, photo } = requestBody
