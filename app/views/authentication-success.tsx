@@ -1,5 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { Shield } from "lucide-react"
+import { Card, CardContent } from '@/components/ui/card'
+import { Shield } from 'lucide-react'
 
 export function AuthSuccessView() {
   return (
@@ -11,11 +11,17 @@ export function AuthSuccessView() {
               <Shield className="h-8 w-8 text-green-600" />
             </div>
             <div>
-              <h3 className="font-semibold text-green-800 mb-2">Authentication Successful!</h3>
-              <p className="text-sm text-muted-foreground">Welcome back! You have been successfully authenticated.</p>
+              <h3 className="font-semibold text-green-800 mb-2">
+                Authentication Successful!
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Welcome back! You have been successfully authenticated.
+              </p>
             </div>
             <div className="bg-green-50 p-3 rounded-lg">
-              <p className="text-xs text-green-700">Redirecting to your dashboard...</p>
+              <p className="text-xs text-green-700">
+                Redirecting to your dashboard...
+              </p>
             </div>
           </div>
         </CardContent>

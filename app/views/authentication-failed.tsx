@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { User } from "lucide-react"
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { User } from 'lucide-react'
 
 export function AuthFailedView({ onRetry, onBack }) {
   return (
@@ -14,9 +14,12 @@ export function AuthFailedView({ onRetry, onBack }) {
               <User className="h-8 w-8 text-red-600" />
             </div>
             <div>
-              <h3 className="font-semibold text-red-800 mb-2">Authentication Failed</h3>
+              <h3 className="font-semibold text-red-800 mb-2">
+                Authentication Failed
+              </h3>
               <p className="text-sm text-muted-foreground">
-                We couldn't match your face with any registered user. Please try again.
+                We couldn't match your face with any registered user. Please try
+                again.
               </p>
             </div>
             <div className="bg-red-50 p-3 rounded-lg">
@@ -28,7 +31,11 @@ export function AuthFailedView({ onRetry, onBack }) {
               </ul>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={onBack} className="flex-1 bg-transparent">
+              <Button
+                variant="outline"
+                onClick={onBack}
+                className="flex-1 bg-transparent"
+              >
                 Back to Home
               </Button>
               <Button onClick={onRetry} className="flex-1">

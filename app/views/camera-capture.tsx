@@ -1,9 +1,21 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Camera } from "lucide-react"
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Camera } from 'lucide-react'
 
-export function CaptureView({ videoRef, canvasRef, onCapture, onCancel, isLoading }) {
+export function CaptureView({
+  videoRef,
+  canvasRef,
+  onCapture,
+  onCancel,
+  isLoading,
+}) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-lg">
@@ -21,7 +33,13 @@ export function CaptureView({ videoRef, canvasRef, onCapture, onCancel, isLoadin
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="relative bg-black rounded-lg overflow-hidden">
-            <video ref={videoRef} autoPlay playsInline muted className="w-full h-64 object-cover" />
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="w-full h-64 object-cover"
+            />
             <canvas ref={canvasRef} className="hidden" />
 
             {/* Face detection overlay */}
@@ -32,7 +50,9 @@ export function CaptureView({ videoRef, canvasRef, onCapture, onCancel, isLoadin
 
           <div className="text-center p-4 bg-blue-50 rounded-lg">
             <p className="font-medium">Position your face in the circle</p>
-            <p className="text-sm text-muted-foreground mt-1">Make sure your face is well-lit and clearly visible</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Make sure your face is well-lit and clearly visible
+            </p>
           </div>
 
           <div className="flex gap-2">

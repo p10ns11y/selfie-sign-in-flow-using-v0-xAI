@@ -1,13 +1,13 @@
-"use client"
+'use client'
 
-import { useMachine } from "@xstate/react"
-import { useRef, useEffect } from "react"
-import { signInMachine } from "../state-machines/sign-in-flow"
-import { CameraReadyView } from "../views/camera-ready"
-import { CaptureView } from "../views/camera-capture"
-import { AuthProcessingView } from "../views/authentication-process"
-import { AuthSuccessView } from "../views/authentication-success"
-import { AuthFailedView } from "../views/authentication-failed"
+import { useMachine } from '@xstate/react'
+import { useRef, useEffect } from 'react'
+import { signInMachine } from '../state-machines/sign-in-flow'
+import { CameraReadyView } from '../views/camera-ready'
+import { CaptureView } from '../views/camera-capture'
+import { AuthProcessingView } from '../views/authentication-process'
+import { AuthSuccessView } from '../views/authentication-success'
+import { AuthFailedView } from '../views/authentication-failed'
 
 interface SignInPageProps {
   onBack: () => void
@@ -21,12 +21,12 @@ export default function SignInPage({ onBack }: SignInPageProps) {
   const customActions = {
     stopStream: ({ context }) => {
       if (context.stream) {
-        context.stream.getTracks().forEach((track) => track.stop())
+        context.stream.getTracks().forEach(track => track.stop())
       }
     },
     handleSuccess: () => {
       setTimeout(() => {
-        alert("Welcome back! You have been successfully authenticated.")
+        alert('Welcome back! You have been successfully authenticated.')
         onBack()
       }, 2000)
     },
@@ -43,14 +43,18 @@ export default function SignInPage({ onBack }: SignInPageProps) {
   useEffect(() => {
     if (state.context.stream && videoRef.current) {
       videoRef.current.srcObject = state.context.stream
-      videoRef.current.play().catch((error) => console.error("Error playing video:", error))
+      videoRef.current
+        .play()
+        .catch(error => console.error('Error playing video:', error))
     }
   }, [state.context.stream])
 
   // Effect to handle camera error
   useEffect(() => {
     if (state.context.error) {
-      alert("Unable to access camera. Please ensure you've granted camera permissions.")
+      alert(
+        "Unable to access camera. Please ensure you've granted camera permissions.",
+      )
     }
   }, [state.context.error])
 
@@ -60,7 +64,7 @@ export default function SignInPage({ onBack }: SignInPageProps) {
 
     const video = videoRef.current
     const canvas = canvasRef.current
-    const context = canvas.getContext("2d")
+    const context = canvas.getContext('2d')
 
     if (!context) return
 
@@ -68,42 +72,47 @@ export default function SignInPage({ onBack }: SignInPageProps) {
     canvas.height = video.videoHeight
     context.drawImage(video, 0, 0)
 
-    const photoDataUrl = canvas.toDataURL("image/jpeg", 0.8)
-    send({ type: "PHOTO_CAPTURED", photo: photoDataUrl })
+    const photoDataUrl = canvas.toDataURL('image/jpeg', 0.8)
+    send({ type: 'PHOTO_CAPTURED', photo: photoDataUrl })
   }
 
-  if (state.matches("ready")) {
+  if (state.matches('ready')) {
     return (
       <CameraReadyView
-        onStart={() => send({ type: "START_CAMERA" })}
+        onStart={() => send({ type: 'START_CAMERA' })}
         onBack={onBack}
         isLoading={state.context.isCameraLoading}
       />
     )
   }
 
-  if (state.matches("capture")) {
+  if (state.matches('capture')) {
     return (
       <CaptureView
         videoRef={videoRef}
         canvasRef={canvasRef}
         onCapture={handleCapture}
-        onCancel={() => send({ type: "CANCEL" })}
+        onCancel={() => send({ type: 'CANCEL' })}
         isLoading={state.context.isCameraLoading}
       />
     )
   }
 
-  if (state.matches("processing")) {
+  if (state.matches('processing')) {
     return <AuthProcessingView />
   }
 
-  if (state.matches("success")) {
+  if (state.matches('success')) {
     return <AuthSuccessView />
   }
 
-  if (state.matches("failed")) {
-    return <AuthFailedView onRetry={() => send({ type: "RETRY" })} onBack={() => send({ type: "BACK" })} />
+  if (state.matches('failed')) {
+    return (
+      <AuthFailedView
+        onRetry={() => send({ type: 'RETRY' })}
+        onBack={() => send({ type: 'BACK' })}
+      />
+    )
   }
 
   return null

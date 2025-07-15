@@ -1,8 +1,14 @@
-"use client"
+'use client'
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Check } from "lucide-react"
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Check } from 'lucide-react'
 
 export function CompleteView({ onSubmit, isCapturing }) {
   return (
@@ -13,7 +19,10 @@ export function CompleteView({ onSubmit, isCapturing }) {
             <Check className="h-8 w-8 text-green-600" />
           </div>
           <CardTitle>Training Complete!</CardTitle>
-          <CardDescription>Your facial recognition model has been successfully trained with AWS Rekognition</CardDescription>
+          <CardDescription>
+            Your facial recognition model has been successfully trained with AWS
+            Rekognition
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="bg-green-50 p-4 rounded-lg">
@@ -25,7 +34,7 @@ export function CompleteView({ onSubmit, isCapturing }) {
             </ul>
           </div>
           <Button onClick={onSubmit} className="w-full" disabled={isCapturing}>
-            {isCapturing ? "Creating Account..." : "Complete Setup"}
+            {isCapturing ? 'Creating Account...' : 'Complete Setup'}
           </Button>
         </CardContent>
       </Card>

@@ -1,12 +1,18 @@
-"use client"
+'use client'
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Alert, AlertDescription } from "@/components/ui/alert" // Assume imported; add if needed
-import { Loader2, Camera, Check, RotateCcw } from "lucide-react"
-import { REQUIRED_ANGLES } from "../camera-utils"
+import { Camera, Check, Loader2, RotateCcw } from 'lucide-react'
+import { Alert, AlertDescription } from '@/components/ui/alert' // Assume imported; add if needed
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
+import { REQUIRED_ANGLES } from '../camera-utils'
 
 export function CreateCaptureView({
   videoRef,
@@ -28,7 +34,8 @@ export function CreateCaptureView({
             <div>
               <CardTitle>Photo Capture</CardTitle>
               <CardDescription>
-                {capturedPhotos.length} of {REQUIRED_ANGLES.length} photos captured
+                {capturedPhotos.length} of {REQUIRED_ANGLES.length} photos
+                captured
               </CardDescription>
             </div>
             <Badge variant="secondary">{currentAngle.name}</Badge>
@@ -37,7 +44,13 @@ export function CreateCaptureView({
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="relative bg-black rounded-lg overflow-hidden">
-            <video ref={videoRef} autoPlay playsInline muted className="w-full h-64 object-cover" />
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="w-full h-64 object-cover"
+            />
             <canvas ref={canvasRef} className="hidden" />
           </div>
 
@@ -51,18 +64,30 @@ export function CreateCaptureView({
 
           {validationError && (
             <Alert variant="destructive">
-              <AlertDescription>{validationError}</AlertDescription>
+              <AlertDescription>
+                {(validationError as unknown as Error)?.message ||
+                  'validation error'}
+              </AlertDescription>
             </Alert>
           )}
 
           <div className="flex gap-2">
             {capturedPhotos.length > 0 && (
-              <Button variant="outline" onClick={onRetake} className="flex-1 bg-transparent" disabled={isValidating}>
+              <Button
+                variant="outline"
+                onClick={onRetake}
+                className="flex-1 bg-transparent"
+                disabled={isValidating}
+              >
                 <RotateCcw className="h-4 w-4 mr-2" />
                 Retake
               </Button>
             )}
-            <Button onClick={onCapture} className="flex-1" disabled={isValidating}>
+            <Button
+              onClick={onCapture}
+              className="flex-1"
+              disabled={isValidating}
+            >
               {isValidating ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -83,10 +108,10 @@ export function CreateCaptureView({
                 key={angle.name}
                 className={`aspect-square rounded border-2 flex items-center justify-center text-xs ${
                   index < capturedPhotos.length
-                    ? "border-green-500 bg-green-50"
+                    ? 'border-green-500 bg-green-50'
                     : index === currentIndex
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 bg-gray-50"
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 bg-gray-50'
                 }`}
               >
                 {index < capturedPhotos.length ? (

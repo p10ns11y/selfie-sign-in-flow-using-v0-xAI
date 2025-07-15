@@ -1,10 +1,10 @@
-import { createMachine, assign } from "xstate"
-import { getCameraStream, authenticate } from "../camera-utils"
+import { createMachine, assign } from 'xstate'
+import { getCameraStream, authenticate } from '../camera-utils'
 
 export const signInMachine = createMachine(
   {
-    id: "signIn",
-    initial: "ready",
+    id: 'signIn',
+    initial: 'ready',
     context: {
       stream: null,
       capturedPhoto: null,
@@ -14,25 +14,25 @@ export const signInMachine = createMachine(
     states: {
       ready: {
         on: {
-          START_CAMERA: "capture",
+          START_CAMERA: 'capture',
         },
       },
       capture: {
-        initial: "starting",
+        initial: 'starting',
         states: {
           starting: {
             entry: assign({ isCameraLoading: true }),
             invoke: {
-              src: "getCameraStream",
+              src: 'getCameraStream',
               onDone: {
-                target: "active",
+                target: 'active',
                 actions: assign({
                   stream: ({ event }) => event.output,
                   isCameraLoading: false,
                 }),
               },
               onError: {
-                target: "#signIn.ready",
+                target: '#signIn.ready',
                 actions: assign({
                   error: ({ event }) => event.error,
                   isCameraLoading: false,
@@ -43,38 +43,38 @@ export const signInMachine = createMachine(
           active: {
             on: {
               PHOTO_CAPTURED: {
-                target: "#signIn.processing",
+                target: '#signIn.processing',
                 actions: assign({
                   capturedPhoto: ({ event }) => event.photo,
                 }),
               },
-              CANCEL: "#signIn.ready",
+              CANCEL: '#signIn.ready',
             },
           },
         },
-        exit: "stopStream",
+        exit: 'stopStream',
       },
       processing: {
         invoke: {
-          src: "authenticate",
+          src: 'authenticate',
           input: ({ context }) => context.capturedPhoto,
           onDone: [
             {
-              target: "success",
+              target: 'success',
               guard: ({ event }) => event.output,
             },
-            { target: "failed" },
+            { target: 'failed' },
           ],
-          onError: "failed",
+          onError: 'failed',
         },
       },
       success: {
-        entry: "handleSuccess",
+        entry: 'handleSuccess',
       },
       failed: {
         on: {
-          RETRY: "ready",
-          BACK: { actions: "handleBack" },
+          RETRY: 'ready',
+          BACK: { actions: 'handleBack' },
         },
       },
     },
@@ -87,7 +87,7 @@ export const signInMachine = createMachine(
     actions: {
       stopStream: ({ context }) => {
         if (context.stream) {
-          context.stream.getTracks().forEach((track) => track.stop())
+          context.stream.getTracks().forEach(track => track.stop())
         }
       },
     },

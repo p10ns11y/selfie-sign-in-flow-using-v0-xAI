@@ -1,12 +1,28 @@
-"use client"
+'use client'
 
-import { useMachine } from "@xstate/react"
-import { useRef, useEffect } from "react"
-import { createAccountMachine } from '../state-machines/create-account' // Fixed typo in path/name for consistency
+import { createBrowserInspector } from '@statelyai/inspect'
+import { useMachine } from '@xstate/react'
+import { useEffect, useRef } from 'react'
+// import { inspect } from "@xstate/inspect";
+import { createActor } from 'xstate'
 import { REQUIRED_ANGLES } from '../camera-utils'
-import { InfoView } from '../views/create-account-info'
+import { createAccountMachine } from '../state-machines/create-account' // Fixed typo in path/name for consistency
 import { CreateCaptureView } from '../views/capture-training-pictures'
+import { InfoView } from '../views/create-account-info'
 import { CompleteView } from '../views/training-complete'
+
+// inspect({
+//   iframe: false, // Opens in new tab for better QoL (less clutter)
+//   url: "https://stately.ai/viz?inspect", // Default visualizer
+// });
+
+const inspector = createBrowserInspector()
+
+const actor = createActor(createAccountMachine, {
+  inspect: inspector.inspect,
+})
+
+actor.start()
 
 interface CreateAccountPageProps {
   onBack: () => void
@@ -34,14 +50,18 @@ export default function CreateAccountPage({ onBack }: CreateAccountPageProps) {
   useEffect(() => {
     if (state.context.stream && videoRef.current) {
       videoRef.current.srcObject = state.context.stream
-      videoRef.current.play().catch((error) => console.error('Error playing video:', error))
+      videoRef.current
+        .play()
+        .catch(error => console.error('Error playing video:', error))
     }
   }, [state.context.stream])
 
   // Handle errors (enhanced for Rekognition)
   useEffect(() => {
     if (state.context.error) {
-      alert(`Error: ${state.context.error.message || state.context.error}. Please try again.`)
+      alert(
+        `Error: ${state.context.error.message || state.context.error}. Please try again.`,
+      )
     }
   }, [state.context.error])
 
@@ -68,8 +88,12 @@ export default function CreateAccountPage({ onBack }: CreateAccountPageProps) {
   if (state.matches('info')) {
     return (
       <InfoView
-        onNameChange={(e) => send({ type: 'UPDATE_FORM', field: 'name', value: e.target.value })}
-        onEmailChange={(e) => send({ type: 'UPDATE_FORM', field: 'email', value: e.target.value })}
+        onNameChange={e =>
+          send({ type: 'UPDATE_FORM', field: 'name', value: e.target.value })
+        }
+        onEmailChange={e =>
+          send({ type: 'UPDATE_FORM', field: 'email', value: e.target.value })
+        }
         onStart={() => send({ type: 'START_CAPTURE' })}
         name={state.context.formData.name}
         email={state.context.formData.email}
@@ -80,7 +104,8 @@ export default function CreateAccountPage({ onBack }: CreateAccountPageProps) {
 
   if (state.matches('capture')) {
     const currentAngle = REQUIRED_ANGLES[state.context.currentIndex]
-    const progress = (state.context.photos.length / REQUIRED_ANGLES.length) * 100
+    const progress =
+      (state.context.photos.length / REQUIRED_ANGLES.length) * 100
     return (
       <CreateCaptureView
         videoRef={videoRef}
@@ -98,7 +123,12 @@ export default function CreateAccountPage({ onBack }: CreateAccountPageProps) {
   }
 
   if (state.matches('complete') || state.matches('submitting')) {
-    return <CompleteView onSubmit={() => send({ type: 'SUBMIT' })} isCapturing={state.context.isCapturing} />
+    return (
+      <CompleteView
+        onSubmit={() => send({ type: 'SUBMIT' })}
+        isCapturing={state.context.isCapturing}
+      />
+    )
   }
 
   if (state.matches('done')) {
