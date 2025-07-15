@@ -21,7 +21,7 @@ export default function SignInPage({ onBack }: SignInPageProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  // Custom actions that close over refs and props
+  // Custom actions
   const customActions = {
     stopStream: ({ context }) => {
       if (context.stream) {
@@ -44,26 +44,22 @@ export default function SignInPage({ onBack }: SignInPageProps) {
     { inspect }
   )
 
-  // Effect to set stream to video element when available
+  // Set stream
   useEffect(() => {
     if (state.context.stream && videoRef.current) {
       videoRef.current.srcObject = state.context.stream
-      videoRef.current
-        .play()
-        .catch(error => console.error('Error playing video:', error))
+      videoRef.current.play().catch(error => console.error('Error playing video:', error))
     }
   }, [state.context.stream])
 
-  // Effect to handle camera error
+  // Handle errors
   useEffect(() => {
     if (state.context.error) {
-      alert(
-        "Unable to access camera. Please ensure you've granted camera permissions.",
-      )
+      alert(`Error: ${state.context.error.message || state.context.error}. Please try again.`)
     }
   }, [state.context.error])
 
-  // Function to handle photo capture using refs
+  // Capture photo
   const handleCapture = () => {
     if (!videoRef.current || !canvasRef.current) return
 
@@ -98,7 +94,7 @@ export default function SignInPage({ onBack }: SignInPageProps) {
         canvasRef={canvasRef}
         onCapture={handleCapture}
         onCancel={() => send({ type: 'CANCEL' })}
-        isLoading={state.context.isCameraLoading}
+        isLoading={state.context.isCameraLoading || state.matches('capture.validating')} // Add for validation spinner if view supports
       />
     )
   }

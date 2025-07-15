@@ -1,4 +1,4 @@
-import { assign, createMachine } from 'xstate'
+import { assign, createMachine, fromPromise } from 'xstate'
 import { getCameraStream } from '../camera-utils'
 
 export const signInMachine = createMachine(
@@ -42,31 +42,28 @@ export const signInMachine = createMachine(
           },
           active: {
             on: {
-              PHOTO_CAPTURED: {
-                target: '#signIn.processing',
-                actions: assign({
-                  capturedPhoto: ({ event }) => event.photo,
-                }),
-              },
+              PHOTO_CAPTURED: 'validating',
               CANCEL: '#signIn.ready',
+            },
+          },
+          validating: {
+            invoke: {
+              src: 'validateAndAuthenticate', // Combined for simplicity (detect + search via API)
+              input: ({ context, event }) => ({ context, photo: event.photo }),
+              onDone: {
+                target: '#signIn.success',
+              },
+              onError: {
+                target: '#signIn.failed',
+                actions: assign({ error: ({ event }) => event.error }),
+              },
             },
           },
         },
         exit: 'stopStream',
       },
-      processing: {
-        invoke: {
-          src: 'authenticate',
-          input: ({ context }) => context.capturedPhoto,
-          onDone: [
-            {
-              target: 'success',
-              guard: ({ event }) => event.output,
-            },
-            { target: 'failed' },
-          ],
-          onError: 'failed',
-        },
+      processing: { // Optional if needed; but combined in validating for agility
+
       },
       success: {
         entry: 'handleSuccess',
@@ -81,8 +78,8 @@ export const signInMachine = createMachine(
   },
   {
     actors: {
-      getCameraStream: getCameraStream,
-      authenticate: ({ input }) => authenticate(input),
+      getCameraStream: fromPromise(getCameraStream),
+      validateAndAuthenticate: fromPromise(validateAndAuthenticate),
     },
     actions: {
       stopStream: ({ context }) => {
@@ -93,3 +90,20 @@ export const signInMachine = createMachine(
     },
   },
 )
+
+async function validateAndAuthenticate({ input }) {
+  debugger;
+  const response = await fetch('/api/rekognition', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'authenticate', photo: input.photo }),
+  });
+
+  const data = await response.json();
+
+  if (!data.success) {
+    throw new Error(data.error || 'Authentication failed');
+  }
+
+  return data;
+}
