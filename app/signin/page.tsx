@@ -10,7 +10,6 @@ import { AuthSuccessView } from '../views/authentication-success'
 import { CaptureView } from '../views/camera-capture'
 import { CameraReadyView } from '../views/camera-ready'
 
-// TODO: Need to turn off in production mode
 const { inspect } = createBrowserInspector()
 
 interface SignInPageProps {

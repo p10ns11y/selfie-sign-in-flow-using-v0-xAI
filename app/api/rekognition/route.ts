@@ -38,6 +38,9 @@ export async function POST(req: Request) {
           const buffer = Buffer.from(photo.split(',')[1], 'base64')
           const params = {
             CollectionId: collectionId,
+            // NOTE to self: Since indexing is done during account creation
+            // Unique id should be created and need to be connected with 
+            // User creating the account. 
             // ExternalImageId: userId,
             DetectionAttributes: ['ALL'],
             Image: { Bytes: buffer },

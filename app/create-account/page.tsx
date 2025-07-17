@@ -1,6 +1,5 @@
 'use client'
 
-
 import { createBrowserInspector } from '@statelyai/inspect'
 import { useMachine } from '@xstate/react'
 import { useEffect, useRef } from 'react'
@@ -10,7 +9,6 @@ import { CreateCaptureView } from '../views/capture-training-pictures'
 import { InfoView } from '../views/create-account-info'
 import { CompleteView } from '../views/training-complete'
 
-// TODO: Need to turn off in production mode
 const { inspect } = createBrowserInspector()
 
 interface CreateAccountPageProps {
@@ -33,7 +31,7 @@ export default function CreateAccountPage({ onBack }: CreateAccountPageProps) {
     createAccountMachine.provide({
       actions: customActions,
     }),
-    { inspect: process.env.NODE_ENV === 'development' ? inspect: undefined }
+    { inspect: process.env.NODE_ENV === 'development' ? inspect : undefined },
   )
 
   // Set stream to video
@@ -69,7 +67,7 @@ export default function CreateAccountPage({ onBack }: CreateAccountPageProps) {
     context.drawImage(video, 0, 0)
 
     const photoDataUrl = canvas.toDataURL('image/jpeg', 0.8)
-    send({ type: 'PHOTO_CAPTURED', photo: photoDataUrl })
+    send({ photo: photoDataUrl, type: 'PHOTO_CAPTURED' })
   }
 
   const handleRetake = () => send({ type: 'RETAKE' })
@@ -77,16 +75,16 @@ export default function CreateAccountPage({ onBack }: CreateAccountPageProps) {
   if (state.matches('info')) {
     return (
       <InfoView
-        onNameChange={e =>
-          send({ type: 'UPDATE_FORM', field: 'name', value: e.target.value })
-        }
+        email={state.context.formData.email}
+        name={state.context.formData.name}
+        onBack={onBack}
         onEmailChange={e =>
-          send({ type: 'UPDATE_FORM', field: 'email', value: e.target.value })
+          send({ field: 'email', type: 'UPDATE_FORM', value: e.target.value })
+        }
+        onNameChange={e =>
+          send({ field: 'name', type: 'UPDATE_FORM', value: e.target.value })
         }
         onStart={() => send({ type: 'START_CAPTURE' })}
-        name={state.context.formData.name}
-        email={state.context.formData.email}
-        onBack={onBack}
       />
     )
   }
@@ -97,16 +95,16 @@ export default function CreateAccountPage({ onBack }: CreateAccountPageProps) {
       (state.context.photos.length / REQUIRED_ANGLES.length) * 100
     return (
       <CreateCaptureView
-        videoRef={videoRef}
         canvasRef={canvasRef}
-        onCapture={handleCapture}
-        onRetake={handleRetake}
-        currentAngle={currentAngle}
-        progress={progress}
         capturedPhotos={state.context.photos}
+        currentAngle={currentAngle}
         currentIndex={state.context.currentIndex}
         isValidating={state.matches('capture.validating')}
-        validationError={state.context.error} // Clears on success
+        onCapture={handleCapture}
+        onRetake={handleRetake}
+        progress={progress}
+        validationError={state.context.error}
+        videoRef={videoRef} // Clears on success
       />
     )
   }
@@ -114,8 +112,8 @@ export default function CreateAccountPage({ onBack }: CreateAccountPageProps) {
   if (state.matches('complete') || state.matches('submitting')) {
     return (
       <CompleteView
-        onSubmit={() => send({ type: 'SUBMIT' })}
         isCapturing={state.context.isCapturing}
+        onSubmit={() => send({ type: 'SUBMIT' })}
       />
     )
   }
