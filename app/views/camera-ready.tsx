@@ -1,6 +1,12 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Camera, ArrowLeft, Loader2, Shield, User } from "lucide-react"
+import { ArrowLeft, Camera, Loader2, Shield, User } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
 export function CameraReadyView({ onStart, onBack, isLoading }) {
   return (
@@ -8,12 +14,14 @@ export function CameraReadyView({ onStart, onBack, isLoading }) {
       <Card className="w-full max-w-md">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={onBack}>
+            <Button onClick={onBack} size="sm" variant="ghost">
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
               <CardTitle>Sign In</CardTitle>
-              <CardDescription>Use your face to sign in securely</CardDescription>
+              <CardDescription>
+                Use your face to sign in securely
+              </CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -24,7 +32,8 @@ export function CameraReadyView({ onStart, onBack, isLoading }) {
             </div>
             <h3 className="font-semibold mb-2">Ready to sign in?</h3>
             <p className="text-sm text-muted-foreground">
-              Position your face clearly in front of the camera and we'll authenticate you instantly.
+              Position your face clearly in front of the camera and we'll
+              authenticate you instantly.
             </p>
           </div>
 
@@ -40,7 +49,12 @@ export function CameraReadyView({ onStart, onBack, isLoading }) {
             </ul>
           </div>
 
-          <Button onClick={onStart} className="w-full h-12" size="lg" disabled={isLoading}>
+          <Button
+            className="w-full h-12"
+            disabled={isLoading}
+            onClick={onStart}
+            size="lg"
+          >
             {isLoading ? (
               <>
                 <Loader2 className="h-5 w-5 mr-2 animate-spin" />

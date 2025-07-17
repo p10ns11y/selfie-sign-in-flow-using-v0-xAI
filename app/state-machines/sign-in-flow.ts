@@ -1,95 +1,106 @@
-import { createMachine, assign } from "xstate"
-import { getCameraStream, authenticate } from "../camera-utils"
+import { assign, createMachine, fromPromise } from 'xstate'
+import { getCameraStream } from '../camera-utils'
 
 export const signInMachine = createMachine(
   {
-    id: "signIn",
-    initial: "ready",
     context: {
-      stream: null,
       capturedPhoto: null,
-      isCameraLoading: false,
       error: null,
+      isCameraLoading: false,
+      stream: null,
     },
+    id: 'signIn',
+    initial: 'ready',
     states: {
-      ready: {
-        on: {
-          START_CAMERA: "capture",
-        },
-      },
       capture: {
-        initial: "starting",
+        exit: 'stopStream',
+        initial: 'starting',
         states: {
+          active: {
+            on: {
+              CANCEL: '#signIn.ready',
+              PHOTO_CAPTURED: 'validating',
+            },
+          },
           starting: {
             entry: assign({ isCameraLoading: true }),
             invoke: {
-              src: "getCameraStream",
               onDone: {
-                target: "active",
                 actions: assign({
-                  stream: ({ event }) => event.output,
+                  error: null,
                   isCameraLoading: false,
+                  stream: ({ event }) => event.output,
                 }),
+                target: 'active',
               },
               onError: {
-                target: "#signIn.ready",
                 actions: assign({
                   error: ({ event }) => event.error,
                   isCameraLoading: false,
                 }),
+                target: '#signIn.ready',
               },
+              src: 'getCameraStream',
             },
           },
-          active: {
-            on: {
-              PHOTO_CAPTURED: {
-                target: "#signIn.processing",
-                actions: assign({
-                  capturedPhoto: ({ event }) => event.photo,
-                }),
+          validating: {
+            invoke: {
+              input: ({ context, event }) => ({ context, photo: event.photo }),
+              onDone: {
+                target: '#signIn.success',
               },
-              CANCEL: "#signIn.ready",
+              onError: {
+                actions: assign({ error: ({ event }) => event.error }),
+                target: '#signIn.failed',
+              },
+              src: 'validateAndAuthenticate',
             },
           },
         },
-        exit: "stopStream",
-      },
-      processing: {
-        invoke: {
-          src: "authenticate",
-          input: ({ context }) => context.capturedPhoto,
-          onDone: [
-            {
-              target: "success",
-              guard: ({ event }) => event.output,
-            },
-            { target: "failed" },
-          ],
-          onError: "failed",
-        },
-      },
-      success: {
-        entry: "handleSuccess",
       },
       failed: {
         on: {
-          RETRY: "ready",
-          BACK: { actions: "handleBack" },
+          BACK: { actions: 'handleBack' },
+          RETRY: 'ready',
         },
+      },
+      ready: {
+        on: {
+          START_CAMERA: 'capture',
+        },
+      },
+      success: {
+        entry: 'handleSuccess',
       },
     },
   },
   {
-    actors: {
-      getCameraStream: getCameraStream,
-      authenticate: ({ input }) => authenticate(input),
-    },
     actions: {
       stopStream: ({ context }) => {
         if (context.stream) {
-          context.stream.getTracks().forEach((track) => track.stop())
+          context.stream.getTracks().forEach(track => track.stop())
         }
       },
     },
+    actors: {
+      getCameraStream: fromPromise(getCameraStream),
+      validateAndAuthenticate: fromPromise(validateAndAuthenticate),
+    },
   },
 )
+
+async function validateAndAuthenticate({ input }) {
+  const response = await fetch('/api/rekognition', {
+    body: JSON.stringify({ action: 'authenticate', photo: input.photo }),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+  })
+
+  const data = await response.json()
+
+  if (!data.success) {
+    throw new Error(data.error || 'Authentication failed')
+  }
+
+  return data
+}

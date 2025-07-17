@@ -1,22 +1,28 @@
-// Camera utility functions
 export const getCameraStream = () =>
   navigator.mediaDevices.getUserMedia({
     video: {
-      facingMode: "user",
-      width: { ideal: 640 },
+      facingMode: 'user',
       height: { ideal: 480 },
+      width: { ideal: 640 },
     },
   })
 
-export const authenticate = (photo: string) =>
-  new Promise((resolve) => setTimeout(() => resolve(Math.random() > 0.3), 3000))
-
-export const submitAccount = () => new Promise((resolve) => setTimeout(resolve, 2000))
-
 export const REQUIRED_ANGLES = [
-  { name: "Front", instruction: "Look straight at the camera", icon: "👤" },
-  { name: "Left Profile", instruction: "Turn your head to the left", icon: "👈" },
-  { name: "Right Profile", instruction: "Turn your head to the right", icon: "👉" },
-  { name: "Slight Up", instruction: "Tilt your head slightly up", icon: "👆" },
-  { name: "Slight Down", instruction: "Tilt your head slightly down", icon: "👇" },
+  { icon: '👤', instruction: 'Look straight at the camera', name: 'Front' },
+  {
+    icon: '👈',
+    instruction: 'Turn your head to the left',
+    name: 'Left Profile',
+  },
+  {
+    icon: '👉',
+    instruction: 'Turn your head to the right',
+    name: 'Right Profile',
+  },
+  { icon: '👆', instruction: 'Tilt your head slightly up', name: 'Slight Up' },
+  {
+    icon: '👇',
+    instruction: 'Tilt your head slightly down',
+    name: 'Slight Down',
+  },
 ]
