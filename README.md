@@ -30,6 +30,12 @@ pnpm run dev
 pnpm run build
 ```
 
+## Preview the production build
+
+```sh
+pnpm run start
+```
+
 ## Project seed preparation
 
 1. Project seed(initial project modules and tools configuration, working prototype) initialized with the [v0.dev](https://v0.dev) chat
@@ -38,3 +44,36 @@ pnpm run build
 4. Vercel for deployment
 5. [AWS Rekognition](https://aws.amazon.com/rekognition/) for real face recognition trained model
 6. [Biomejs](https://biomejs.dev/) for consistent format and code styling
+
+## Play with the state machines simulation at stately.ai
+
+### Creat Account Flow
+
+<a href="https://stately.ai/registry/editor/embed/ba1525ec-eb20-481d-a16a-603f0dba37e4?machineId=3823989b-7359-433b-826a-a373cdda24d5">
+  <img 
+    src="https://github.com/user-attachments/assets/379dcb30-39b3-4975-af5a-9f9a4088f9a7" 
+    alt="Stately.ai machine" 
+    width="800" 
+    height="600"
+  >
+</a>
+
+### Sign In Flow
+
+<a href="https://stately.ai/registry/editor/embed/ba1525ec-eb20-481d-a16a-603f0dba37e4?machineId=a68dcace-10b4-4c97-899f-b966a5beb44c">
+  <img 
+    src="https://github.com/user-attachments/assets/9b116ad6-032f-4ca0-8fa3-5fabda27f3a3" 
+    alt="Stately.ai machine" 
+    width="800" 
+    height="600"
+  >
+</a>
+
+## Watch the simple walk through 
+
+Use 2x speed if needed
+
+[![Face Authentication using AWS Rekognition](https://img.youtube.com/vi/o3AXKWVPn_I/hqdefault.jpg)](https://www.youtube-nocookie.com/embed/o3AXKWVPn_I)
+
+P.S: Who owns youtube-nocookie? 
+Google LLC (https://www.whois.com/whois/youtube-nocookie.com)
