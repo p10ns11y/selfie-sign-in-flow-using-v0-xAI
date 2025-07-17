@@ -32,7 +32,7 @@ export default function CreateAccountPage({ onBack }: CreateAccountPageProps) {
     createAccountMachine.provide({
       actions: customActions,
     }),
-    { inspect }
+    { inspect: process.env.NODE_ENV === 'development' ? inspect: undefined }
   )
 
   // Set stream to video

@@ -3,84 +3,78 @@ import { getCameraStream } from '../camera-utils'
 
 export const signInMachine = createMachine(
   {
+    context: {
+      capturedPhoto: null,
+      error: null,
+      isCameraLoading: false,
+      stream: null,
+    },
     id: 'signIn',
     initial: 'ready',
-    context: {
-      stream: null,
-      capturedPhoto: null,
-      isCameraLoading: false,
-      error: null,
-    },
     states: {
-      ready: {
-        on: {
-          START_CAMERA: 'capture',
-        },
-      },
       capture: {
+        exit: 'stopStream',
         initial: 'starting',
         states: {
+          active: {
+            on: {
+              CANCEL: '#signIn.ready',
+              PHOTO_CAPTURED: 'validating',
+            },
+          },
           starting: {
             entry: assign({ isCameraLoading: true }),
             invoke: {
-              src: 'getCameraStream',
               onDone: {
-                target: 'active',
                 actions: assign({
-                  stream: ({ event }) => event.output,
+                  error: null,
                   isCameraLoading: false,
+                  stream: ({ event }) => event.output,
                 }),
+                target: 'active',
               },
               onError: {
-                target: '#signIn.ready',
                 actions: assign({
                   error: ({ event }) => event.error,
                   isCameraLoading: false,
                 }),
+                target: '#signIn.ready',
               },
-            },
-          },
-          active: {
-            on: {
-              PHOTO_CAPTURED: 'validating',
-              CANCEL: '#signIn.ready',
+              src: 'getCameraStream',
             },
           },
           validating: {
             invoke: {
-              src: 'validateAndAuthenticate', // Combined for simplicity (detect + search via API)
               input: ({ context, event }) => ({ context, photo: event.photo }),
               onDone: {
                 target: '#signIn.success',
               },
               onError: {
-                target: '#signIn.failed',
                 actions: assign({ error: ({ event }) => event.error }),
+                target: '#signIn.failed',
               },
+              src: 'validateAndAuthenticate',
             },
           },
         },
-        exit: 'stopStream',
       },
-      processing: { // Optional if needed; but combined in validating for agility
-
+      failed: {
+        on: {
+          BACK: { actions: 'handleBack' },
+          RETRY: 'ready',
+        },
+      },
+      ready: {
+        on: {
+          START_CAMERA: 'capture',
+        },
       },
       success: {
         entry: 'handleSuccess',
       },
-      failed: {
-        on: {
-          RETRY: 'ready',
-          BACK: { actions: 'handleBack' },
-        },
-      },
     },
   },
   {
-    actors: {
-      getCameraStream: fromPromise(getCameraStream),
-      validateAndAuthenticate: fromPromise(validateAndAuthenticate),
-    },
     actions: {
       stopStream: ({ context }) => {
         if (context.stream) {
@@ -88,22 +82,25 @@ export const signInMachine = createMachine(
         }
       },
     },
+    actors: {
+      getCameraStream: fromPromise(getCameraStream),
+      validateAndAuthenticate: fromPromise(validateAndAuthenticate),
+    },
   },
 )
 
 async function validateAndAuthenticate({ input }) {
-  debugger;
   const response = await fetch('/api/rekognition', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'authenticate', photo: input.photo }),
-  });
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+  })
 
-  const data = await response.json();
+  const data = await response.json()
 
   if (!data.success) {
-    throw new Error(data.error || 'Authentication failed');
+    throw new Error(data.error || 'Authentication failed')
   }
 
-  return data;
+  return data
 }

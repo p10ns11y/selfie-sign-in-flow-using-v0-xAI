@@ -3,46 +3,21 @@ import { getCameraStream, REQUIRED_ANGLES } from '../camera-utils'
 
 export const createAccountMachine = createMachine(
   {
+    context: {
+      currentIndex: 0,
+      error: null as string | null,
+      formData: { email: '', name: '' },
+      isCapturing: false,
+      photos: [] as string[],
+      stream: null as MediaStream | null,
+    },
     id: 'createAccount',
     initial: 'info',
-    context: {
-      formData: { name: '', email: '' },
-      stream: null as MediaStream | null,
-      photos: [] as string[],
-      currentIndex: 0,
-      isCapturing: false,
-      error: null as string | null,
-    },
     states: {
-      info: {
-        on: {
-          UPDATE_FORM: {
-            actions: 'updateForm',
-          },
-          START_CAPTURE: {
-            target: 'capture',
-            guard: 'isFormValid',
-          },
-        },
-      },
       capture: {
+        exit: 'stopStream',
         initial: 'starting',
         states: {
-          starting: {
-            invoke: {
-              src: 'getCameraStream',
-              onDone: {
-                target: 'active',
-                actions: assign({ stream: ({ event }) => event.output }),
-              },
-              onError: {
-                target: 'active',
-                actions: assign({
-                  error: ({ event }) => event.error as string,
-                }),
-              },
-            },
-          },
           active: {
             on: {
               PHOTO_CAPTURED: 'validating',
@@ -52,95 +27,122 @@ export const createAccountMachine = createMachine(
               },
             },
           },
-          validating: {
+          starting: {
             invoke: {
-              src: 'validatePhoto',
-              input: ({ event }) => ({ photo: event.photo }),
-              onDone: [
-                {
-                  target: '#createAccount.complete',
-                  actions: 'addPhoto',
-                  guard: 'isLastPhoto',
-                },
-                {
-                  target: 'active',
-                  actions: 'addPhoto',
-                },
-              ],
-              onError: {
+              onDone: {
+                actions: assign({ stream: ({ event }) => event.output }),
                 target: 'active',
+              },
+              onError: {
                 actions: assign({
                   error: ({ event }) => event.error as string,
                 }),
+                target: 'active',
               },
+              src: 'getCameraStream',
+            },
+          },
+          validating: {
+            invoke: {
+              input: ({ event }) => ({ photo: event.photo }),
+              onDone: [
+                {
+                  actions: 'addPhoto',
+                  guard: 'isLastPhoto',
+                  target: '#createAccount.complete',
+                },
+                {
+                  actions: 'addPhoto',
+                  target: 'active',
+                },
+              ],
+              onError: {
+                actions: assign({
+                  error: ({ event }) => event.error as string,
+                }),
+                target: 'active',
+              },
+              src: 'validatePhoto',
             },
           },
         },
-        exit: 'stopStream',
       },
       complete: {
         on: {
           SUBMIT: 'submitting',
         },
       },
-      submitting: {
-        entry: assign({ isCapturing: true }),
-        invoke: {
-          src: 'submitAccount',
-          input: ({ context }) => ({ context }),
-          onDone: {
-            target: 'done',
-            actions: assign({ isCapturing: false }),
+      done: {
+        entry: 'handleComplete',
+      },
+      info: {
+        on: {
+          START_CAPTURE: {
+            guard: 'isFormValid',
+            target: 'capture',
           },
-          onError: {
-            target: 'complete',
-            actions: assign({
-              isCapturing: false,
-              error: ({ event }) => event.error as string,
-            }),
+          UPDATE_FORM: {
+            actions: 'updateForm',
           },
         },
       },
-      done: {
-        entry: 'handleComplete',
+      submitting: {
+        entry: assign({ isCapturing: true }),
+        invoke: {
+          input: ({ context }) => ({ context }),
+          onDone: {
+            actions: assign({ error: null, isCapturing: false }),
+            target: 'done',
+          },
+          onError: {
+            actions: assign({
+              error: ({ event }) => event.error as string,
+              isCapturing: false,
+            }),
+            target: 'complete',
+          },
+          src: 'submitAccount',
+        },
       },
     },
   },
   {
-    actors: {
-      getCameraStream: fromPromise(getCameraStream),
-      submitAccount: fromPromise(submitAccount),
-      validatePhoto: fromPromise(validatePhoto),
-    },
     actions: {
-      updateForm: assign({
-        formData: ({ context, event }) => ({
-          ...context.formData,
-          [event.field]: event.value,
-        }),
-      }),
       addPhoto: assign({
+        currentIndex: ({ context }) => context.currentIndex + 1,
+        error: null,
         photos: ({ context, event }) => {
           return [...context.photos, event?.output?.input?.photo]
         },
-        currentIndex: ({ context }) => context.currentIndex + 1,
       }),
       removeLastPhoto: assign({
-        photos: ({ context }) => context.photos.slice(0, -1),
         currentIndex: ({ context }) => context.currentIndex - 1,
+        error: null,
+        photos: ({ context }) => context.photos.slice(0, -1),
       }),
       stopStream: ({ context }) => {
         if (context.stream) {
           context.stream.getTracks().forEach(track => track.stop())
         }
       },
+      updateForm: assign({
+        formData: ({ context, event }) => ({
+          ...context.formData,
+          [event.field]: event.value,
+        }),
+      }),
+    },
+    actors: {
+      getCameraStream: fromPromise(getCameraStream),
+      submitAccount: fromPromise(submitAccount),
+      validatePhoto: fromPromise(validatePhoto),
     },
     guards: {
+      hasPhotos: ({ context }) => context.photos.length > 0,
       isFormValid: ({ context }) =>
         !!context.formData.name && !!context.formData.email,
       isLastPhoto: ({ context }) =>
         context.currentIndex + 1 === REQUIRED_ANGLES.length,
-      hasPhotos: ({ context }) => context.photos.length > 0,
     },
   },
 )
@@ -150,38 +152,38 @@ async function validatePhoto({ input }: { input: { photo: string } }) {
   const photo = input.photo
 
   const response = await fetch('/api/rekognition', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'validate', photo }),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
   })
   const data = await response.json()
-  
+
   if (!response.ok) {
     throw new Error(data.error || 'Validation failed')
   }
-  
+
   return {
-    input,
     data,
-  };
+    input,
+  }
 }
 
 async function submitAccount({ input }: { input: { photo: string } }) {
   const { photos } = input.context
 
   const response = await fetch('/api/rekognition', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'index', photos }),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
   })
   const data = await response.json()
 
-  if (!response.ok) { 
-    throw new Error(data.error || 'Validation failed') 
+  if (!response.ok) {
+    throw new Error(data.error || 'Validation failed')
   }
 
   return {
-    input,
     data,
-  };
+    input,
+  }
 }

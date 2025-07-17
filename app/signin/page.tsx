@@ -41,7 +41,7 @@ export default function SignInPage({ onBack }: SignInPageProps) {
     signInMachine.provide({
       actions: customActions,
     }),
-    { inspect }
+    { inspect: process.env.NODE_ENV === 'development' ? inspect: undefined }
   )
 
   // Set stream
