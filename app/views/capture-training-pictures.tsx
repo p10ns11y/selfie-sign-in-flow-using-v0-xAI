@@ -40,18 +40,18 @@ export function CreateCaptureView({
             </div>
             <Badge variant="secondary">{currentAngle.name}</Badge>
           </div>
-          <Progress value={progress} className="w-full" />
+          <Progress className="w-full" value={progress} />
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="relative bg-black rounded-lg overflow-hidden">
             <video
-              ref={videoRef}
               autoPlay
-              playsInline
-              muted
               className="w-full h-64 object-cover"
+              muted
+              playsInline
+              ref={videoRef}
             />
-            <canvas ref={canvasRef} className="hidden" />
+            <canvas className="hidden" ref={canvasRef} />
           </div>
 
           <div className="text-center p-4 bg-blue-50 rounded-lg">
@@ -74,19 +74,19 @@ export function CreateCaptureView({
           <div className="flex gap-2">
             {capturedPhotos.length > 0 && (
               <Button
-                variant="outline"
-                onClick={onRetake}
                 className="flex-1 bg-transparent"
                 disabled={isValidating}
+                onClick={onRetake}
+                variant="outline"
               >
                 <RotateCcw className="h-4 w-4 mr-2" />
                 Retake
               </Button>
             )}
             <Button
-              onClick={onCapture}
               className="flex-1"
               disabled={isValidating}
+              onClick={onCapture}
             >
               {isValidating ? (
                 <>
@@ -105,7 +105,6 @@ export function CreateCaptureView({
           <div className="grid grid-cols-5 gap-2">
             {REQUIRED_ANGLES.map((angle, index) => (
               <div
-                key={angle.name}
                 className={`aspect-square rounded border-2 flex items-center justify-center text-xs ${
                   index < capturedPhotos.length
                     ? 'border-green-500 bg-green-50'
@@ -113,6 +112,7 @@ export function CreateCaptureView({
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 bg-gray-50'
                 }`}
+                key={angle.name}
               >
                 {index < capturedPhotos.length ? (
                   <Check className="h-4 w-4 text-green-600" />

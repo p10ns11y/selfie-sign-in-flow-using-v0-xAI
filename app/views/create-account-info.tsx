@@ -26,7 +26,7 @@ export function InfoView({
       <Card className="w-full max-w-md">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={onBack}>
+            <Button onClick={onBack} size="sm" variant="ghost">
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
@@ -42,19 +42,19 @@ export function InfoView({
             <Label htmlFor="name">Full Name</Label>
             <Input
               id="name"
-              value={name}
               onChange={onNameChange}
               placeholder="Enter your full name"
+              value={name}
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
-              type="email"
-              value={email}
               onChange={onEmailChange}
               placeholder="Enter your email"
+              type="email"
+              value={email}
             />
           </div>
           <div className="bg-blue-50 p-4 rounded-lg">
@@ -67,9 +67,9 @@ export function InfoView({
             </p>
           </div>
           <Button
-            onClick={onStart}
             className="w-full"
             disabled={!name || !email}
+            onClick={onStart}
           >
             Continue to Photo Capture
           </Button>

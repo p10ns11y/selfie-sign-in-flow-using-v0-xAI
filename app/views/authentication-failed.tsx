@@ -1,8 +1,8 @@
 'use client'
 
+import { User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { User } from 'lucide-react'
 
 export function AuthFailedView({ onRetry, onBack }) {
   return (
@@ -25,20 +25,20 @@ export function AuthFailedView({ onRetry, onBack }) {
             <div className="bg-red-50 p-3 rounded-lg">
               <p className="text-xs text-red-700 mb-2">Possible reasons:</p>
               <ul className="text-xs text-red-600 space-y-1">
-                <li>• Poor lighting conditions</li>
-                <li>• Face partially obscured</li>
-                <li>• Camera angle too extreme</li>
+                <li>Poor lighting conditions</li>
+                <li>Face partially obscured</li>
+                <li>Camera angle too extreme</li>
               </ul>
             </div>
             <div className="flex gap-2">
               <Button
-                variant="outline"
-                onClick={onBack}
                 className="flex-1 bg-transparent"
+                onClick={onBack}
+                variant="outline"
               >
                 Back to Home
               </Button>
-              <Button onClick={onRetry} className="flex-1">
+              <Button className="flex-1" onClick={onRetry}>
                 Try Again
               </Button>
             </div>

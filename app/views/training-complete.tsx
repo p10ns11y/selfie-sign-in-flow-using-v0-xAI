@@ -1,5 +1,6 @@
 'use client'
 
+import { Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -8,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Check } from 'lucide-react'
 
 export function CompleteView({ onSubmit, isCapturing }) {
   return (
@@ -33,7 +33,7 @@ export function CompleteView({ onSubmit, isCapturing }) {
               <li>• You can now sign in with just a selfie verification</li>
             </ul>
           </div>
-          <Button onClick={onSubmit} className="w-full" disabled={isCapturing}>
+          <Button className="w-full" disabled={isCapturing} onClick={onSubmit}>
             {isCapturing ? 'Creating Account...' : 'Complete Setup'}
           </Button>
         </CardContent>

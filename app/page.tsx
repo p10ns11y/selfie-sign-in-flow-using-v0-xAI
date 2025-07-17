@@ -37,17 +37,17 @@ export default function HomePage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <Button
-            onClick={() => setCurrentPage('create')}
             className="w-full h-12"
+            onClick={() => setCurrentPage('create')}
             size="lg"
           >
             Create Account
           </Button>
           <Button
-            onClick={() => setCurrentPage('signin')}
-            variant="outline"
             className="w-full h-12"
+            onClick={() => setCurrentPage('signin')}
             size="lg"
+            variant="outline"
           >
             Sign In
           </Button>

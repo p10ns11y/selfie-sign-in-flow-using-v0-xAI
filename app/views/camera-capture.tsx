@@ -1,3 +1,5 @@
+import { Camera } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -6,8 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Camera } from 'lucide-react'
 
 export function CaptureView({
   videoRef,
@@ -34,13 +34,13 @@ export function CaptureView({
         <CardContent className="space-y-4">
           <div className="relative bg-black rounded-lg overflow-hidden">
             <video
-              ref={videoRef}
               autoPlay
-              playsInline
-              muted
               className="w-full h-64 object-cover"
+              muted
+              playsInline
+              ref={videoRef}
             />
-            <canvas ref={canvasRef} className="hidden" />
+            <canvas className="hidden" ref={canvasRef} />
 
             {/* Face detection overlay */}
             <div className="absolute inset-0 flex items-center justify-center">
@@ -56,10 +56,10 @@ export function CaptureView({
           </div>
 
           <div className="flex gap-2">
-            <Button variant="outline" onClick={onCancel} className="flex-1">
+            <Button className="flex-1" onClick={onCancel} variant="outline">
               Cancel
             </Button>
-            <Button onClick={onCapture} className="flex-1" disabled={isLoading}>
+            <Button className="flex-1" disabled={isLoading} onClick={onCapture}>
               <Camera className="h-4 w-4 mr-2" />
               Capture & Sign In
             </Button>

@@ -23,39 +23,43 @@ export default function SignInPage({ onBack }: SignInPageProps) {
 
   // Custom actions
   const customActions = {
-    stopStream: ({ context }) => {
-      if (context.stream) {
-        context.stream.getTracks().forEach(track => track.stop())
-      }
-    },
+    handleBack: onBack,
     handleSuccess: () => {
       setTimeout(() => {
         alert('Welcome back! You have been successfully authenticated.')
         onBack()
       }, 2000)
     },
-    handleBack: onBack,
+    stopStream: ({ context }) => {
+      if (context.stream) {
+        context.stream.getTracks().forEach(track => track.stop())
+      }
+    },
   }
 
   const [state, send] = useMachine(
     signInMachine.provide({
       actions: customActions,
     }),
-    { inspect: process.env.NODE_ENV === 'development' ? inspect: undefined }
+    { inspect: process.env.NODE_ENV === 'development' ? inspect : undefined },
   )
 
   // Set stream
   useEffect(() => {
     if (state.context.stream && videoRef.current) {
       videoRef.current.srcObject = state.context.stream
-      videoRef.current.play().catch(error => console.error('Error playing video:', error))
+      videoRef.current
+        .play()
+        .catch(error => console.error('Error playing video:', error))
     }
   }, [state.context.stream])
 
   // Handle errors
   useEffect(() => {
     if (state.context.error) {
-      alert(`Error: ${state.context.error.message || state.context.error}. Please try again.`)
+      alert(
+        `Error: ${state.context.error.message || state.context.error}. Please try again.`,
+      )
     }
   }, [state.context.error])
 
@@ -74,15 +78,15 @@ export default function SignInPage({ onBack }: SignInPageProps) {
     context.drawImage(video, 0, 0)
 
     const photoDataUrl = canvas.toDataURL('image/jpeg', 0.8)
-    send({ type: 'PHOTO_CAPTURED', photo: photoDataUrl })
+    send({ photo: photoDataUrl, type: 'PHOTO_CAPTURED' })
   }
 
   if (state.matches('ready')) {
     return (
       <CameraReadyView
-        onStart={() => send({ type: 'START_CAMERA' })}
-        onBack={onBack}
         isLoading={state.context.isCameraLoading}
+        onBack={onBack}
+        onStart={() => send({ type: 'START_CAMERA' })}
       />
     )
   }
@@ -90,11 +94,13 @@ export default function SignInPage({ onBack }: SignInPageProps) {
   if (state.matches('capture')) {
     return (
       <CaptureView
-        videoRef={videoRef}
         canvasRef={canvasRef}
-        onCapture={handleCapture}
+        isLoading={
+          state.context.isCameraLoading || state.matches('capture.validating')
+        }
         onCancel={() => send({ type: 'CANCEL' })}
-        isLoading={state.context.isCameraLoading || state.matches('capture.validating')} // Add for validation spinner if view supports
+        onCapture={handleCapture}
+        videoRef={videoRef} // Add for validation spinner if view supports
       />
     )
   }
@@ -110,8 +116,8 @@ export default function SignInPage({ onBack }: SignInPageProps) {
   if (state.matches('failed')) {
     return (
       <AuthFailedView
-        onRetry={() => send({ type: 'RETRY' })}
         onBack={() => send({ type: 'BACK' })}
+        onRetry={() => send({ type: 'RETRY' })}
       />
     )
   }
